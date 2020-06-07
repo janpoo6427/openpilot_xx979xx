@@ -242,8 +242,14 @@ class CarInterface(CarInterfaceBase):
     ret = self.CS.update(self.cp, self.cp2, self.cp_cam)
     ret.canValid = self.cp.can_valid and self.cp2.can_valid and self.cp_cam.can_valid
 
+    if self.CP.enableCruise and not self.CC.scc_live:
+      self.CP.enableCruise = False
+    elif self.CC.scc_live and not self.CP.enableCruise:
+      self.CP.enableCruise = True
+
     # most HKG cars has no long control, it is safer and easier to engage by main on
-    ret.cruiseState.enabled = ret.cruiseState.available if not self.CC.longcontrol else ret.cruiseState.enabled
+    if not self.CC.longcontrol:
+      ret.cruiseState.enabled = ret.cruiseState.available
     # some Optima only has blinker flash signal
     if self.CP.carFingerprint == CAR.KIA_OPTIMA:
       ret.leftBlinker = self.CS.left_blinker_flash or self.CS.prev_left_blinker and self.CC.turning_signal_timer
@@ -302,13 +308,18 @@ class CarInterface(CarInterfaceBase):
       events.add(EventName.turningIndicatorOn)
     if self.lkas_button_alert:
       events.add(EventName.lkasButtonOff)
-    #TODO Varible for min Speed for LCA
-    # if ret.rightBlinker and ret.rightBlindspot and ret.vEgo > (45 * CV.MPH_TO_MS):
-      # events.add(EventName.rightLCAbsm)
-    # if ret.leftBlinker and ret.leftBlindspot and ret.vEgo > (45 * CV.MPH_TO_MS):
-      # events.add(EventName.leftLCAbsm)
     if not self.CC.longcontrol and EventName.pedalPressed in events.events:
       events.events.remove(EventName.pedalPressed)
+
+    # handle button presses
+    if not self.CP.enableCruise:
+      for b in ret.buttonEvents:
+        # do enable on both accel and decel buttons
+        if b.type in [ButtonType.accelCruise, ButtonType.decelCruise] and not b.pressed:
+          events.add(EventName.buttonEnable)
+        # do disable on button down
+        if b.type == ButtonType.cancel and b.pressed:
+          events.add(EventName.buttonCancel)
 
     ret.events = events.to_msg()
 

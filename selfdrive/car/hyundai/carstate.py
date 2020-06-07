@@ -219,7 +219,8 @@ class CarState(CarStateBase):
       ("CF_Lca_Stat", "LCA11", 0),
       ("CF_Lca_IndLeft", "LCA11", 0),
       ("CF_Lca_IndRight", "LCA11", 0),
-      ("MainMode_ACC", "SCC11", 0),
+
+      ("MainMode_ACC", "SCC11", 1),
       ("SCCInfoDisplay", "SCC11", 0),
       ("AliveCounterACC", "SCC11", 0),
       ("VSetDis", "SCC11", 0),
@@ -228,7 +229,7 @@ class CarState(CarStateBase):
       ("TauGapSet", "SCC11", 4),
       ("ACC_ObjStatus", "SCC11", 0),
       ("ACC_ObjLatPos", "SCC11", 0),
-      ("ACC_ObjDist", "SCC11", 204.6),
+      ("ACC_ObjDist", "SCC11", 150), #TK211X value is 204.6
       ("ACC_ObjRelSpd", "SCC11", 0),
       ("Navi_SCC_Curve_Status", "SCC11", 0),
       ("Navi_SCC_Curve_Act", "SCC11", 0),
@@ -390,7 +391,7 @@ class CarState(CarStateBase):
       ]
     if CP.sccBus == 1:
       signals += [
-        ("MainMode_ACC", "SCC11", 0),
+        ("MainMode_ACC", "SCC11", 1),
         ("SCCInfoDisplay", "SCC11", 0),
         ("AliveCounterACC", "SCC11", 0),
         ("VSetDis", "SCC11", 0),
@@ -399,7 +400,7 @@ class CarState(CarStateBase):
         ("TauGapSet", "SCC11", 4),
         ("ACC_ObjStatus", "SCC11", 0),
         ("ACC_ObjLatPos", "SCC11", 0),
-        ("ACC_ObjDist", "SCC11", 204.6),
+        ("ACC_ObjDist", "SCC11", 150.),
         ("ACC_ObjRelSpd", "SCC11", 0),
         ("Navi_SCC_Curve_Status", "SCC11", 0),
         ("Navi_SCC_Curve_Act", "SCC11", 0),
@@ -473,7 +474,7 @@ class CarState(CarStateBase):
     checks = []
     if CP.sccBus == 2:
       signals += [
-        ("MainMode_ACC", "SCC11", 0),
+        ("MainMode_ACC", "SCC11", 1),
         ("SCCInfoDisplay", "SCC11", 0),
         ("AliveCounterACC", "SCC11", 0),
         ("VSetDis", "SCC11", 0),
@@ -482,7 +483,7 @@ class CarState(CarStateBase):
         ("TauGapSet", "SCC11", 4),
         ("ACC_ObjStatus", "SCC11", 0),
         ("ACC_ObjLatPos", "SCC11", 0),
-        ("ACC_ObjDist", "SCC11", 204.6),
+        ("ACC_ObjDist", "SCC11", 150.),
         ("ACC_ObjRelSpd", "SCC11", 0),
         ("Navi_SCC_Curve_Status", "SCC11", 0),
         ("Navi_SCC_Curve_Act", "SCC11", 0),
