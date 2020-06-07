@@ -2,7 +2,8 @@ from cereal import car
 from common.numpy_fast import clip
 from selfdrive.car import apply_std_steer_torque_limits
 from selfdrive.car.hyundai.hyundaican import create_lkas11, create_clu11, create_lfa_mfa, \
-                                             create_scc12, create_mdps12
+                                             create_scc11, create_scc12, create_mdps12, \
+                                             create_scc13, create_scc14
 from selfdrive.car.hyundai.values import Buttons, SteerLimitParams, CAR
 from opendbc.can.packer import CANPacker
 
@@ -68,10 +69,11 @@ class CarController():
     self.last_lead_distance = 0
     self.turning_signal_timer = 0
     self.lkas_button_on = True
-    self.longcontrol = False #TODO: make auto
+    self.longcontrol = True #TODO: make auto
+    self.scc_live = CP.sccBus == 0
 
   def update(self, enabled, CS, frame, actuators, pcm_cancel_cmd, visual_alert,
-             left_lane, right_lane, left_lane_depart, right_lane_depart):
+             left_lane, right_lane, left_lane_depart, right_lane_depart, set_speed, lead_visible):
 
     # *** compute control surfaces ***
 
@@ -123,6 +125,20 @@ class CarController():
     if frame == 0: # initialize counts from last received count signals
       self.lkas11_cnt = CS.lkas11["CF_Lkas_MsgCount"]
       self.scc12_cnt = CS.scc12["CR_VSM_Alive"] + 1 if not CS.no_radar else 0
+      self.prev_scc_cnt = CS.scc11["AliveCounterACC"]
+      self.scc_update_frame = frame
+
+    # check if SCC on bus 0 is live
+    if frame % 10 == 0 and CS.scc_bus == 0:
+      if CS.scc11["AliveCounterACC"] == self.prev_scc_cnt:
+        if frame - self.scc_update_frame > 15 and self.scc_live:
+          self.scc_live = False
+      else:
+        self.scc_live = True
+        self.prev_scc_cnt = CS.scc11["AliveCounterACC"]
+        self.scc_update_frame = frame
+
+    self.prev_scc_cnt = CS.scc11["AliveCounterACC"]
 
     self.lkas11_cnt = (self.lkas11_cnt + 1) % 0x10
     self.scc12_cnt %= 0xF
@@ -144,8 +160,14 @@ class CarController():
     elif CS.mdps_bus: # send mdps12 to LKAS to prevent LKAS error if no cancel cmd
       can_sends.append(create_mdps12(self.packer, frame, CS.mdps12))
 
-    if CS.scc_bus and self.longcontrol and frame % 2: # send scc12 to car if SCC not on bus 0 and longcontrol enabled
+    # send scc to car if longcontrol enabled and SCC not on bus 0 or ont live
+    if self.longcontrol and (CS.scc_bus or not self.scc_live) and frame % 2 == 0: 
       can_sends.append(create_scc12(self.packer, apply_accel, enabled, self.scc12_cnt, CS.scc12))
+      can_sends.append(create_scc11(self.packer, frame, enabled, set_speed, lead_visible, CS.scc11))
+      if CS.has_scc13 and frame % 20 == 0:
+        can_sends.append(create_scc13(self.packer, CS.scc13))
+      if CS.has_scc14:
+        can_sends.append(create_scc14(self.packer, enabled, CS.scc14))
       self.scc12_cnt += 1
 
     if CS.out.cruiseState.standstill:
