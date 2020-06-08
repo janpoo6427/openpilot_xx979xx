@@ -74,7 +74,7 @@ void detect_configuration(void) {
 // ///// Board functions ///// //
 // TODO: Make these config options in the board struct
 bool board_has_gps(void) {
-  return ((hw_type == HW_TYPE_GREY_PANDA) || (hw_type == HW_TYPE_BLACK_PANDA) || (hw_type == HW_TYPE_UNO));
+  return ((hw_type == HW_TYPE_WHITE_PANDA) || (hw_type == HW_TYPE_GREY_PANDA) || (hw_type == HW_TYPE_BLACK_PANDA) || (hw_type == HW_TYPE_UNO));
 }
 
 bool board_has_gmlan(void) {
