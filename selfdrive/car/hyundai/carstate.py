@@ -61,11 +61,11 @@ class CarState(CarStateBase):
     ret.steerWarning = cp_mdps.vl["MDPS12"]['CF_Mdps_ToiUnavail'] != 0
 
     # cruise state
-    ret.cruiseState.enabled = cp.vl['EMS16']['CRUISE_LAMP_M']#(cp_scc.vl["SCC12"]['ACCMode'] != 0) if not self.no_radar else \
+    ret.cruiseState.enabled = bool(cp.vl['EMS16']['CRUISE_LAMP_M'])#(cp_scc.vl["SCC12"]['ACCMode'] != 0) if not self.no_radar else \
                               #        cp.vl["LVR12"]['CF_Lvr_CruiseSet'] != 0
-    ret.cruiseState.available = cp.vl['EMS16']['CRUISE_LAMP_M']#(cp_scc.vl["SCC11"]["MainMode_ACC"] != 0) if not self.no_radar else \
+    ret.cruiseState.available = bool(cp.vl['EMS16']['CRUISE_LAMP_M'])#(cp_scc.vl["SCC11"]["MainMode_ACC"] != 0) if not self.no_radar else \
                                 #      cp.vl['EMS16']['CRUISE_LAMP_M'] != 0
-    ret.cruiseState.standstill = 4 #cp_scc.vl["SCC11"]['SCCInfoDisplay'] == 4. if not self.no_radar else False
+    ret.cruiseState.standstill = True #4 #cp_scc.vl["SCC11"]['SCCInfoDisplay'] == 4. if not self.no_radar else False
     self.is_set_speed_in_mph = int(cp.vl["CLU11"]["CF_Clu_SPEED_UNIT"])
     if ret.cruiseState.enabled:
       speed_conv = CV.MPH_TO_MS if self.is_set_speed_in_mph else CV.KPH_TO_MS
