@@ -267,6 +267,9 @@ class CarState(CarStateBase):
       ("SCCMode2", "SCC14", 0),
       ("ComfortBandUpper", "SCC14", 0),
       ("ComfortBandLower", "SCC14", 0),
+      ("CRUISE_LAMP_M", "EMS16", 0),
+      ("CRUISE_LAMP_S", "EMS16", 0),
+      ("CF_Lvr_CruiseSet", "LVR12", 0),
     ]
 
     checks = [
