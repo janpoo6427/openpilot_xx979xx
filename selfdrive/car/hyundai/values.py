@@ -195,7 +195,7 @@ FEATURES = {
   "use_tcu_gears": [CAR.KIA_OPTIMA, CAR.SONATA_2019],                                    # Use TCU Message for Gear Selection
   "use_elect_gears": [CAR.KIA_OPTIMA_H, CAR.KONA_EV, CAR.SONATA_H, CAR.KIA_NIRO_EV], # Use E_GEAR Message for Gear Selection
   "use_elect_ems": [CAR.SONATA_H],                                      # Use E_EMS11 Message for Gas and Brake for Hybrid/ELectric
-  "has_scc13": [CAR.TUSCON_TL], 
+  "has_scc13": [CAR.TUCSON_TL], 
   "has_scc14": [], 
 }
 
