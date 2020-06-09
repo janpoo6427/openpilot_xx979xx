@@ -69,7 +69,7 @@ class CarState(CarStateBase):
     #print("curiseState.enable:"+str(ret.cruiseState.enabled), end= ' ')
     #print("curiseState.available:"+str(ret.cruiseState.available))
     ret.cruiseState.standstill = True #4 #cp_scc.vl["SCC11"]['SCCInfoDisplay'] == 4. if not self.no_radar else False
-    self.is_set_speed_in_mph = 10 int(cp.vl["CLU11"]["CF_Clu_SPEED_UNIT"])
+    self.is_set_speed_in_mph = 10 #int(cp.vl["CLU11"]["CF_Clu_SPEED_UNIT"])
     if ret.cruiseState.enabled:
       speed_conv = CV.MPH_TO_MS if self.is_set_speed_in_mph else CV.KPH_TO_MS
       ret.cruiseState.speed = 10 # cp_scc.vl["SCC11"]['VSetDis'] * speed_conv if not self.no_radar else \
