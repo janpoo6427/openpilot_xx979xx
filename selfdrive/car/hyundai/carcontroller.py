@@ -70,7 +70,7 @@ class CarController():
     self.turning_signal_timer = 0
     self.lkas_button_on = True
     self.longcontrol = True #TODO: make auto
-    self.scc_live = CP.sccBus == 0
+    self.scc_live = not CP.radarOffCan
 
   def update(self, enabled, CS, frame, actuators, pcm_cancel_cmd, visual_alert,
              left_lane, right_lane, left_lane_depart, right_lane_depart, set_speed, lead_visible):
@@ -129,9 +129,9 @@ class CarController():
       self.scc_update_frame = frame
 
     # check if SCC on bus 0 is live
-    if frame % 7 == 0 and CS.scc_bus == 0:
+    if frame % 7 == 0 and not CS.no_radar:
       if CS.scc11["AliveCounterACC"] == self.prev_scc_cnt:
-        if frame - self.scc_update_frame > 15 and self.scc_live:
+        if frame - self.scc_update_frame > 20 and self.scc_live:
           self.scc_live = False
       else:
         self.scc_live = True
@@ -189,7 +189,7 @@ class CarController():
       self.last_lead_distance = 0  
 
     # 20 Hz LFA MFA message
-    if frame % 5 == 0 and self.car_fingerprint in [CAR.SONATA, CAR.PALISADE, CAR.SONATA_H]:
+    if frame % 5 == 0 and self.car_fingerprint in [CAR.SONATA, CAR.PALISADE, CAR.SONATA_H, CAR.SANTA_FE]:
       can_sends.append(create_lfa_mfa(self.packer, frame, enabled))
 
     return can_sends

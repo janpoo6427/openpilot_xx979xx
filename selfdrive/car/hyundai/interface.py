@@ -36,13 +36,11 @@ class CarInterface(CarInterfaceBase):
 
     if candidate in [CAR.SANTA_FE, CAR.SANTA_FE_1]:
       ret.lateralTuning.pid.kf = 0.00005
-      ret.mass = 3982. * CV.LB_TO_KG + STD_CARGO_KG
+      ret.mass = 1694 + STD_CARGO_KG
       ret.wheelbase = 2.766
-      # Values from optimizer
-      ret.steerRatio = 16.55  # 13.8 is spec end-to-end
-      tire_stiffness_factor = 0.82
-      ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[9., 22.], [9., 22.]]
-      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.2, 0.35], [0.05, 0.09]]
+      ret.steerRatio = 13.8 * 1.15  # 13.8 is spec end-to-end
+      ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0.], [0.]]
+      ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.25], [0.05]]
     elif candidate in [CAR.SONATA, CAR.SONATA_H]:
       ret.lateralTuning.pid.kf = 0.00005
       ret.mass = 1513. + STD_CARGO_KG
@@ -269,21 +267,18 @@ class CarInterface(CarInterfaceBase):
     buttonEvents = []
     if self.CS.cruise_buttons != self.CS.prev_cruise_buttons:
       be = car.CarState.ButtonEvent.new_message()
-      be.type = ButtonType.unknown
-      if self.CS.cruise_buttons != 0:
-        be.pressed = True
-        but = self.CS.cruise_buttons
-      else:
-        be.pressed = False
-        but = self.CS.prev_cruise_buttons
+      be.pressed = self.CS.cruise_buttons != 0 
+      but = self.CS.cruise_buttons if be.pressed else self.CS.prev_cruise_buttons
       if but == Buttons.RES_ACCEL:
         be.type = ButtonType.accelCruise
       elif but == Buttons.SET_DECEL:
         be.type = ButtonType.decelCruise
-      elif but == Buttons.CANCEL:
-        be.type = ButtonType.cancel
       elif but == Buttons.GAP_DIST:
         be.type = ButtonType.gapAdjustCruise
+      elif but == Buttons.CANCEL:
+        be.type = ButtonType.cancel
+      else:
+        be.type = ButtonType.unknown
       buttonEvents.append(be)
     if self.CS.cruise_main_button != self.CS.prev_cruise_main_button:
       be = car.CarState.ButtonEvent.new_message()
@@ -307,6 +302,8 @@ class CarInterface(CarInterfaceBase):
 
     # handle button presses
     if not self.CP.enableCruise:
+      if EventName.pcmDisable in events.events:
+        events.events.remove(EventName.pcmDisable)
       for b in ret.buttonEvents:
         # do enable on both accel and decel buttons
         if b.type in [ButtonType.accelCruise, ButtonType.decelCruise] and not b.pressed:
