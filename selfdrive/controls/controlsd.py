@@ -91,7 +91,7 @@ class Controls:
     print(controller_available, end =' ')
     print(self.CP.dashcamOnly, end =' ')
     print(community_feature_disallowed, end =' ')
-    print(community_feature_toggle, end =' ')
+    print(community_feature_toggle)
 
     if self.read_only:
       self.CP.safetyModel = car.CarParams.SafetyModel.noOutput
@@ -448,6 +448,7 @@ class Controls:
 
     if not self.read_only:
       # send car controls over can
+      print("send car controls over can")
       can_sends = self.CI.apply(CC)
       self.pm.send('sendcan', can_list_to_can_capnp(can_sends, msgtype='sendcan', valid=CS.canValid))
 
