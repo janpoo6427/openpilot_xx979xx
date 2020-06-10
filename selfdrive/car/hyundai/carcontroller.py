@@ -69,7 +69,7 @@ class CarController():
     self.last_lead_distance = 0
     self.turning_signal_timer = 0
     self.lkas_button_on = True
-    self.longcontrol = True #TODO: make auto
+    self.longcontrol = False #TODO: make auto
     self.scc_live = not CP.radarOffCan
 
   def update(self, enabled, CS, frame, actuators, pcm_cancel_cmd, visual_alert,
@@ -161,7 +161,7 @@ class CarController():
       can_sends.append(create_mdps12(self.packer, frame, CS.mdps12))
 
     # send scc to car if longcontrol enabled and SCC not on bus 0 or ont live
-    if self.longcontrol and (CS.scc_bus or not self.scc_live) and frame % 2 == 0: 
+    if (CS.scc_bus or not self.scc_live) and frame % 2 == 0: 
       can_sends.append(create_scc12(self.packer, apply_accel, enabled, self.scc12_cnt, CS.scc12))
       can_sends.append(create_scc11(self.packer, frame, enabled, set_speed, lead_visible, CS.scc11))
       if CS.has_scc13 and frame % 20 == 0:

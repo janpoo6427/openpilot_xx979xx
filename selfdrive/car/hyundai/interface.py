@@ -297,8 +297,8 @@ class CarInterface(CarInterfaceBase):
       events.add(EventName.turningIndicatorOn)
     if self.lkas_button_alert:
       events.add(EventName.lkasButtonOff)
-    #if not self.CC.longcontrol and EventName.pedalPressed in events.events:
-    #  events.events.remove(EventName.pedalPressed)
+    if not self.CC.longcontrol and EventName.pedalPressed in events.events:
+      events.events.remove(EventName.pedalPressed)
 
     # handle button presses
     if not self.CP.enableCruise:
